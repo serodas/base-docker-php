@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name base.local;
+    server_name ${NGINX_DOMAIN};
     root /var/www/project/public;
 
     location / {

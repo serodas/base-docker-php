@@ -1,7 +1,7 @@
-FROM php:7.4-fpm
+FROM php:8.0-fpm-buster
 ARG TIMEZONE
 
-COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
+COPY php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     acl \
@@ -37,7 +37,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     mbstring \
     opcache \
-    ldap
+    ldap \
+    && echo 'alias sf="php bin/console"' >> ~/.bashrc
 
 RUN docker-php-source extract \
     && set -x \
@@ -62,14 +63,14 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
     && printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini \
     && "date"
 
-COPY ./docker/odbc/ibm-iaccess-1.1.0.12-1.0.amd64.deb /tmp/
+COPY odbc/ibm-iaccess-1.1.0.12-1.0.amd64.deb /tmp/
 RUN dpkg -i /tmp/ibm-iaccess-1.1.0.12-1.0.amd64.deb
 RUN rm /tmp/ibm-iaccess-1.1.0.12-1.0.amd64.deb
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && composer --version
 
-COPY ./docker/xdebug/xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
-COPY ./docker/opcache/opcache.ini $PHP_INI_DIR/conf.d/docker-php-ext-opcache.ini
-COPY ./docker/odbc/odbc.ini /etc/odbc.ini
+COPY xdebug/xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
+COPY opcache/opcache.ini $PHP_INI_DIR/conf.d/docker-php-ext-opcache.ini
+COPY odbc/odbc.ini /etc/odbc.ini
 WORKDIR /var/www/project

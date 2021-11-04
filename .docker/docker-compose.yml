@@ -3,14 +3,15 @@ version: "3"
 services:
   mysql:
     build:
-      context: .
-      dockerfile: docker/mysql/Dockerfile
+      context: ./mysql
     command: --default-authentication-plugin=mysql_native_password
     ports:
       - "3306:3306"
     environment:
-        MYSQL_ROOT_PASSWORD: 1234
-        MYSQL_DATABASE: base
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql-db-data:/var/lib/mysql
     networks:
@@ -18,27 +19,27 @@ services:
 
   nginx:
     build:
-      context: .
-      dockerfile: docker/nginx/Dockerfile
+      context: ./nginx
     ports:
       - "80:80"
     expose:
       - "9008"
     networks:
       - base
+    env_file:
+      - .env.nginx.local
     volumes:
-      - .:/var/www/project
+      - ../:/var/www/project
     depends_on:
       - php
 
   php:
     build:
-      context: .
-      dockerfile: docker/php/Dockerfile
+      context: ./php
       args:
         TIMEZONE: ${TIMEZONE}
     volumes:
-      - .:/var/www/project
+      - ../:/var/www/project
     expose:
       - "9008"
     networks:
