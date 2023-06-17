@@ -22,8 +22,9 @@ services:
       context: ./nginx
     ports:
       - "80:80"
+      - "443:443"
     expose:
-      - "9008"
+      - "9003"
     networks:
       - base
     env_file:
@@ -41,7 +42,7 @@ services:
     volumes:
       - ../:/var/www/project
     expose:
-      - "9008"
+      - "9003"
     networks:
       - base
     depends_on:

@@ -1,4 +1,4 @@
-FROM php:8.0-fpm-buster
+FROM php:8.2-fpm-buster
 ARG TIMEZONE
 
 COPY php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
@@ -51,7 +51,7 @@ RUN docker-php-source extract \
     && docker-php-source delete \
     && php -m
 
-RUN pecl install xdebug-3.0.2 \
+RUN pecl install xdebug-3.2.0 \
     && rm -rf /tmp/pear \
     && docker-php-ext-enable xdebug
 
